@@ -1,11 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 
-export function ContactRender({ contacts, handleDelete }) {
+export function ContactRender({ contacts, handleDelete, filteredContacts }) {
+  console.log(contacts)
+  console.log(filteredContacts)
+  const result = filteredContacts.length ? filteredContacts : contacts
   return (
     <>
       <ul>
-        {contacts.map((item) => (
+        {result.map((item) => (
           <li key={item.id}>
             {item.name}: {item.number}{" "}
             <button onClick={handleDelete} value={item.id}>

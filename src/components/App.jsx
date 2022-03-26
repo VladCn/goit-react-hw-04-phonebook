@@ -1,105 +1,134 @@
-import React from "react";
-import shortid from "shortid";
+import React, { useEffect, useState } from "react";
 import { ContactList } from "./ContactList";
 import { Phonebook } from "./Phonebook";
 import { ContactRender } from "./ContactRender";
+import shortid from "shortid";
+import { loadFromLocalStorage, saveToLocalStorage } from "utils";
 
-export class App extends React.Component {
-  state = {
-    contacts: [],
-    filter: "",
-  };
+const KEY = "contacts"
+export function App() {
+  const [contacts, setContacts] = useState([])
+  const [filter, setFilter] = useState("")
+  const [filteredContacts, setFilteredContacts] = useState([])
 
-  componentDidMount() {
-    const load = (key) => {
-      try {
-        const serializedState = localStorage.getItem(key);
-        return serializedState === null ? [] : JSON.parse(serializedState);
-      } catch (error) {
-        console.error("Get state error: ", error.message);
-      }
-    };
-    const localArray = load("contacts:");
-    console.log(localArray);
-    this.setState({ contacts: localArray });
-  }
+useEffect(() => {
+  const localArray = loadFromLocalStorage(KEY);
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevState.contacts !== this.state.contacts) {
-      console.log("ne raven");
-      const save = (key, value) => {
-        try {
-          const serializedState = JSON.stringify(value);
-          localStorage.setItem(key, serializedState);
-        } catch (error) {
-          console.error("Set state error: ", error.message);
-        }
-      };
-      save("contacts:", this.state.contacts);
-    }
-  }
+  setContacts(localArray);
+},[])
 
-  handleDelete = (event) => {
+  useEffect(() => {
+    const filteredContacts = contacts?.filter((item) => {
+      return item?.name?.includes(filter);
+    });
+    setFilteredContacts(filteredContacts)
+  },[contacts, filter])
+
+  const handleDelete = (event) => {
     console.log(event.target.value);
-    this.setState((prev) => ({
-      contacts: prev.contacts.filter(
-        (value) => value.id !== event.target.value
-      ),
-    }));
+    const newContacts = contacts.filter((value) => value.id !== event.target.value)
+    setContacts(newContacts)
+    saveToLocalStorage(KEY, newContacts)
   };
 
-  handleFilterContact = (event) => {
+  const handleFilterContact = (event) => {
     event.preventDefault();
-    this.setState({
-      filter: event.currentTarget.value,
-    });
+    // const filteredContacts = contacts?.filter((item) => {
+    //   return item?.name?.includes(filter);
+    // });
+    // setFilter(filteredContacts);
+    setFilter(event.target.value)
   };
 
-  handleSubmit = (data) => {
-    const save = (key, value) => {
-      try {
-        const serializedState = JSON.stringify(value);
-        localStorage.setItem(key, serializedState);
-      } catch (error) {
-        console.error("Set state error: ", error.message);
-      }
-    };
-
-    this.setState((prev) => {
-      const res = prev.contacts.map((item) => {
-        return item.name;
-      });
-
-      if (res.includes(data.name)) {
-        return alert(`${data.name} is already in contacts`);
-      } else {
-        save("contacts:", [
-          ...prev.contacts,
-          {
-            name: data.name,
-            number: data.number,
-            id: shortid.generate(),
-          },
-        ]);
-
-        return {
-          contacts: [
-            ...prev.contacts,
-            {
-              name: data.name,
-              number: data.number,
-              id: shortid.generate(),
-            },
-          ],
-        };
-      }
+  const handleSubmit = (data) => {
+    const res = contacts.map((item) => {
+      return item.name;
     });
-  };
 
-  render() {
-    const filteredContacts = this.state.contacts?.filter((item) => {
-      return item?.name?.includes(this.state.filter);
-    });
+    if (res.includes(data.name)) {
+      return alert(`${data.name} is already in contacts`);
+    } else {
+      const newContacts = [
+        ...contacts,
+        {
+          name: data.name,
+          number: data.number,
+          id: shortid.generate(),
+        },
+      ];
+      setContacts(newContacts);
+      console.log(newContacts)
+      saveToLocalStorage(KEY, newContacts)
+    }
+
+}
+
+
+
+
+
+
+    // componentDidMount() {
+  //   const load = (key) => {
+  //     try {
+  //       const serializedState = localStorage.getItem(key);
+  //       return serializedState === null ? [] : JSON.parse(serializedState);
+  //     } catch (error) {
+  //       console.error("Get state error: ", error.message);
+  //     }
+  //   };
+  //   const localArray = load("contacts:");
+  //   console.log(localArray);
+  //   this.setState({ contacts: localArray });
+  // }
+
+  // componentDidUpdate(prevProps, prevState, snapshot) {
+  //   if (prevState.contacts !== this.state.contacts) {
+  //     console.log("ne raven");
+  //     const save = (key, value) => {
+  //       try {
+  //         const serializedState = JSON.stringify(value);
+  //         localStorage.setItem(key, serializedState);
+  //       } catch (error) {
+  //         console.error("Set state error: ", error.message);
+  //       }
+  //     };
+  //     save("contacts:", this.state.contacts);
+  //   }
+  // }
+
+  // handleDelete = (event) => {
+  //   console.log(event.target.value);
+  //   this.setState((prev) => ({
+  //     contacts: prev.contacts.filter(
+  //       (value) => value.id !== event.target.value
+  //     ),
+  //   }));
+  // };
+  //
+  // handleFilterContact = (event) => {
+  //   event.preventDefault();
+  //   this.setState({
+  //     filter: event.currentTarget.value,
+  //   });
+  // };
+  //
+  // handleSubmit = (data) => {
+  //   const save = (key, value) => {
+  //     try {
+  //       const serializedState = JSON.stringify(value);
+  //       localStorage.setItem(key, serializedState);
+  //     } catch (error) {
+  //       console.error("Set state error: ", error.message);
+  //     }
+  //   };
+
+
+
+
+  //
+  //
+
 
     return (
       <div
@@ -116,19 +145,19 @@ export class App extends React.Component {
         }}
       >
         <h2>Phonebook</h2>
-        <Phonebook onSubmit={this.handleSubmit} />
+        <Phonebook onSubmit={handleSubmit} />
 
         <ContactList
-          contacts={filteredContacts}
-          onFilterContact={this.handleFilterContact}
-          filter={this.state.filter}
+          onFilterContact={handleFilterContact}
+          filter={filter}
         />
 
         <ContactRender
-          contacts={filteredContacts}
-          handleDelete={this.handleDelete}
+          contacts={contacts}
+          filteredContacts={filteredContacts}
+          handleDelete={handleDelete}
         />
       </div>
-    );
-  }
+    )
+
 }
