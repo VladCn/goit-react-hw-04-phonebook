@@ -6,6 +6,7 @@ import shortid from "shortid";
 import { loadFromLocalStorage, saveToLocalStorage } from "utils";
 
 const KEY = "contacts"
+
 export function App() {
   const [contacts, setContacts] = useState([])
   const [filter, setFilter] = useState("")
@@ -33,10 +34,6 @@ useEffect(() => {
 
   const handleFilterContact = (event) => {
     event.preventDefault();
-    // const filteredContacts = contacts?.filter((item) => {
-    //   return item?.name?.includes(filter);
-    // });
-    // setFilter(filteredContacts);
     setFilter(event.target.value)
   };
 
@@ -62,73 +59,6 @@ useEffect(() => {
     }
 
 }
-
-
-
-
-
-
-    // componentDidMount() {
-  //   const load = (key) => {
-  //     try {
-  //       const serializedState = localStorage.getItem(key);
-  //       return serializedState === null ? [] : JSON.parse(serializedState);
-  //     } catch (error) {
-  //       console.error("Get state error: ", error.message);
-  //     }
-  //   };
-  //   const localArray = load("contacts:");
-  //   console.log(localArray);
-  //   this.setState({ contacts: localArray });
-  // }
-
-  // componentDidUpdate(prevProps, prevState, snapshot) {
-  //   if (prevState.contacts !== this.state.contacts) {
-  //     console.log("ne raven");
-  //     const save = (key, value) => {
-  //       try {
-  //         const serializedState = JSON.stringify(value);
-  //         localStorage.setItem(key, serializedState);
-  //       } catch (error) {
-  //         console.error("Set state error: ", error.message);
-  //       }
-  //     };
-  //     save("contacts:", this.state.contacts);
-  //   }
-  // }
-
-  // handleDelete = (event) => {
-  //   console.log(event.target.value);
-  //   this.setState((prev) => ({
-  //     contacts: prev.contacts.filter(
-  //       (value) => value.id !== event.target.value
-  //     ),
-  //   }));
-  // };
-  //
-  // handleFilterContact = (event) => {
-  //   event.preventDefault();
-  //   this.setState({
-  //     filter: event.currentTarget.value,
-  //   });
-  // };
-  //
-  // handleSubmit = (data) => {
-  //   const save = (key, value) => {
-  //     try {
-  //       const serializedState = JSON.stringify(value);
-  //       localStorage.setItem(key, serializedState);
-  //     } catch (error) {
-  //       console.error("Set state error: ", error.message);
-  //     }
-  //   };
-
-
-
-
-  //
-  //
-
 
     return (
       <div
